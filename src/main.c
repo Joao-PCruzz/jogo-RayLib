@@ -3,8 +3,8 @@
 
 int main(){
     SetTargetFPS(60);
-    const int altura_tela = 1240;
-    const int largura_tela = 600;
+    const int altura_tela = 600;
+    const int largura_tela = 1200;
 
     InitWindow(largura_tela, altura_tela, "Primeiro jogo");
     //Game Loop

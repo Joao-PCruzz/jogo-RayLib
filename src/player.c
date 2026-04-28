@@ -16,6 +16,7 @@ void UpdatePlayer(Player *player){
     if(IsKeyDown(KEY_A)) player->posicao.x -= player->rapidez* GetFrameTime();
 }
 
+//Desenhar o jogador
 void DrawPlayer(Player player){
     DrawRectangle(player.posicao.x, player.posicao.y, 50, 50, RED);
 }

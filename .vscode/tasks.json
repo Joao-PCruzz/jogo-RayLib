@@ -4,11 +4,26 @@
     {
       "label": "Compilar jogo",
       "type": "shell",
-      "command": "bash",
+      "command": "gcc",
       "args": [
-        "-c",
-        "gcc main.c player.c enemy.c -I../include -L/mingw64/lib -lraylib -lopengl32 -lgdi32 -lwinmm -o jogo.exe"
+        "main.c",
+        "player.c",
+        "enemy.c",
+
+        "-I../include",
+        "-L/mingw64/lib",
+
+        "-lraylib",
+        "-lopengl32",
+        "-lgdi32",
+        "-lwinmm",
+
+        "-o",
+        "jogo.exe"
       ],
+      "options": {
+        "cwd": "${workspaceFolder}/src"
+      },
       "group": {
         "kind": "build",
         "isDefault": true
