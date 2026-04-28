@@ -2,12 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "build",
+      "label": "Compilar jogo",
       "type": "shell",
       "command": "bash",
       "args": [
         "-c",
-        "cd \"${workspaceFolder}\" && gcc main.c -o jogo -lraylib -lopengl32 -lgdi32 -lwinmm"
+        "gcc main.c player.c enemy.c -I../include -L/mingw64/lib -lraylib -lopengl32 -lgdi32 -lwinmm -o jogo.exe"
       ],
       "group": {
         "kind": "build",
