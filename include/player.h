@@ -13,13 +13,12 @@ typedef struct{
     float controleDoAr;
     float multiQueda;
     float multiPuloBaixo;
-
     int estaNoChao; //evita que o player pule infinitamente
 } Player;
 
 //funções do player
 void InitPlayer(Player *player);
-void UpdatePlayer(Player *player);
+void UpdatePlayer(Player *player, Rectangle ground);
 void DrawPlayer(Player player);
 
 #endif

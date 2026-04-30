@@ -7,17 +7,26 @@ void InitPlayer(Player *player){
     player->velocidade = (Vector2){0, 0};
     player->rapidez = 200.0f;
     player->gravidade = 800.0f;
-    player->forcaPulo = -350.0f;
-    player->controleDoAr = -0.5f; //50% de controle do ar
+    player->forcaPulo = -1000.0f;
+    player->controleDoAr = 0.5f; //50% de controle do ar
     player-> multiQueda = 2.0f;
-    player-> multiPuloBaixo = 2.5f;
+    player-> multiPuloBaixo = 2.0f;
     player->estaNoChao = 0; //1 para quando pode pular, 0 para quanndo não pode
 }
 
 //Atualizar o Frame
 //GetFrameTime garante que o jogo funcione igual em qualquer FPS
 //IsKeyDown checa se a tecla está sendo pressionada
-void UpdatePlayer(Player *player){
+void UpdatePlayer(Player *player, Rectangle ground){
+    //Cria o retângulo do player a todo movimento
+    Rectangle playerRect = {
+        player->posicao.y,
+        player->posicao.x,
+        50, 
+        50
+    };
+
+
     float dt = GetFrameTime(); //linha para igualar o movimento em qualquer FPS
     float controle = player->estaNoChao ? 1.0f : player->controleDoAr; //se o jogador está no chão, usa 1, se não, usa controle do ar
 
@@ -39,7 +48,7 @@ void UpdatePlayer(Player *player){
 
     //Pulo
     if(IsKeyPressed(KEY_SPACE) && player->estaNoChao) { //KeyPressed é quando a tecla foi pressionada uma vez
-        player->posicao.y = player->forcaPulo;
+        player->velocidade.y = player->forcaPulo;
         player->estaNoChao = 0;
     }
     if(IsKeyPressed(KEY_SPACE) && player->velocidade.y < 0){
@@ -47,6 +56,13 @@ void UpdatePlayer(Player *player){
     }
     //Aplicação de velocidade ao pulo
     player->posicao.y += player->velocidade.y * dt;
+
+    if(CheckCollisionRecs(playerRect, ground)){
+        player->posicao.y = ground.y - 50;
+        player->velocidade.y = 0;
+        player->estaNoChao = 1;
+
+    }
 
     //Chão temporário
     if(player->posicao.y >= 400){
