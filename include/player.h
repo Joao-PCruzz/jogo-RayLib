@@ -7,6 +7,14 @@ typedef struct{
     Vector2 posicao;
     Vector2 velocidade;
     float rapidez;
+    float gravidade;
+    //Para o pulo
+    float forcaPulo;
+    float controleDoAr;
+    float multiQueda;
+    float multiPuloBaixo;
+
+    int estaNoChao; //evita que o player pule infinitamente
 } Player;
 
 //funções do player
