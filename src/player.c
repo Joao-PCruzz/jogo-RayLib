@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "player.h"
+#include "map.h"
 
 //Iniciando o player com suas características
 void InitPlayer(Player *player){
