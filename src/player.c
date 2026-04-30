@@ -9,8 +9,8 @@ void InitPlayer(Player *player){
     player->gravidade = 800.0f;
     player->forcaPulo = -1000.0f;
     player->controleDoAr = 0.5f; //50% de controle do ar
-    player-> multiQueda = 2.0f;
-    player-> multiPuloBaixo = 2.0f;
+    player->multiQueda = 2.0f;
+    player->multiPuloBaixo = 2.0f;
     player->estaNoChao = 0; //1 para quando pode pular, 0 para quanndo não pode
 }
 
@@ -20,8 +20,8 @@ void InitPlayer(Player *player){
 void UpdatePlayer(Player *player, Rectangle ground){
     //Cria o retângulo do player a todo movimento
     Rectangle playerRect = {
-        player->posicao.y,
         player->posicao.x,
+        player->posicao.y,
         50, 
         50
     };
@@ -54,21 +54,21 @@ void UpdatePlayer(Player *player, Rectangle ground){
     if(IsKeyPressed(KEY_SPACE) && player->velocidade.y < 0){
         player->velocidade.y *= 0.5f;
     }
-    //Aplicação de velocidade ao pulo
+    //Aplicação do movimento
+    player->posicao.x += player->velocidade.x * dt;
     player->posicao.y += player->velocidade.y * dt;
 
+
+    //Atualização do retângulo antes de checar colisão
+    playerRect.x = player->posicao.x;
+    playerRect.y = player->posicao.y;
+
+    //Checagem da colisão com os retângulos
     if(CheckCollisionRecs(playerRect, ground)){
         player->posicao.y = ground.y - 50;
         player->velocidade.y = 0;
         player->estaNoChao = 1;
 
-    }
-
-    //Chão temporário
-    if(player->posicao.y >= 400){
-        player->posicao.y = 400;
-        player->velocidade.y = 0;
-        player->estaNoChao = 1;
     }
 }
 
