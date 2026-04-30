@@ -20,5 +20,6 @@ typedef struct{
 void InitPlayer(Player *player);
 void UpdatePlayer(Player *player, Rectangle ground);
 void DrawPlayer(Player player);
+Rectangle GetPlayerRect(Player *player);
 
 #endif
