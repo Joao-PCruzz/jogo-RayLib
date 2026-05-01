@@ -16,7 +16,9 @@ void DrawMapa(){
     for(int y=0; y < LINHAS; y++){
         for(int x=0; x < COLUNAS; x++){
             //desenhar o retângulo a cada interação na cor azul escuro
-            DrawRectangleRec(GetTileRect(y,x), DARKBLUE);
+            if(mapa[y][x] == 1){
+                DrawRectangleRec(GetTileRect(x,y), DARKBLUE);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 #include "raylib.h"
 //header guard
 #ifndef PLAYER_H
-#define Player_h
+#define PLAYER_H
 
 typedef struct{
     Vector2 posicao;
@@ -18,8 +18,11 @@ typedef struct{
 
 //funções do player
 void InitPlayer(Player *player);
-void UpdatePlayer(Player *player, Rectangle ground);
+void UpdatePlayer(Player *player);
 void DrawPlayer(Player player);
 Rectangle GetPlayerRect(Player *player);
+void GetTileRange(Rectangle rect, int *comecoX, int *fimX, int *comecoY, int *fimY);
+void ResolveColisaoX(Player *player);
+void ResolveColisaoY(Player *player);
 
 #endif
