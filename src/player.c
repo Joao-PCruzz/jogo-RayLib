@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "player.h"
+#include "map.h"
 
 //Iniciando o player com suas características
 void InitPlayer(Player *player){
@@ -17,10 +18,11 @@ void InitPlayer(Player *player){
 //Atualizar o Frame
 //GetFrameTime garante que o jogo funcione igual em qualquer FPS
 //IsKeyDown checa se a tecla está sendo pressionada
-void UpdatePlayer(Player *player, Rectangle ground){
+void UpdatePlayer(Player *player){
     float dt = GetFrameTime(); //linha para igualar o movimento em qualquer FPS
     Rectangle playerRect; //instanciação do retângulo do Player
     float controle = player->estaNoChao ? 1.0f : player->controleDoAr; //se o jogador está no chão, usa 1, se não, usa controle do ar
+    player->estaNoChao = 1;
 
     //Movimento vertical
     if(IsKeyDown(KEY_D)) player->posicao.x += player->rapidez * controle * dt; //KeyDown é se a tecla está sendo pressionada
@@ -48,46 +50,21 @@ void UpdatePlayer(Player *player, Rectangle ground){
         player->velocidade.y *= 0.5f;
     }
 
-    //Para ajudar na colisao
+    //Para ajudar na colisao nos tiles do map
     player->estaNoChao = 0;
+    if(IsKeyPressed(KEY_SPACE) && player->velocidade.y > 0){
+        //Força do ar quando o player está em queda
+         player->velocidade.y *= 0.5f;
+    }
     //Aplicação do movimento
     player->posicao.x += player->velocidade.x * dt;
-    //Atualização
-    playerRect = GetPlayerRect(player);
-
-    //Checagem da colisão com os retângulos
-    if(CheckCollisionRecs(playerRect, ground)){
-
-        if(player->velocidade.x > 0){
-            //vindo da esquerda e bateu na parede a direita
-            player->posicao.x = ground.x - playerRect.width;
-        }
-        else if(player->velocidade.x < 0){
-            //vindo da direita e bateu na parede da esquerda
-            player->posicao.x = ground.x + playerRect.width;
-        }
-        player->velocidade.x = 0;
-    }
+    //Atualização da colisao pelos tiles próximos do map (paredes)
+    ResolveColisaoX(player);
 
     //atualização da velocidade em y
     player->posicao.y += player->velocidade.y * dt;
-    //atualiza o retângulo
-    playerRect = GetPlayerRect(player);
-
-    //checagem de coilisao com os retângulos
-    if(CheckCollisionRecs(playerRect, ground)){
-        if(player->velocidade.y > 0){
-            //caindo
-            player->posicao.y = ground.y - playerRect.height;
-            player->velocidade.y = 0;
-            player->estaNoChao = 1;
-        }
-        else if(player->velocidade.y < 0){
-            //batendo a cabeça
-            player->posicao.y = ground.y + playerRect.height;
-            player->velocidade.y = 0;
-        }
-    }
+    //atualização da colisãp pelos tiles próximos o map (player)
+    ResolveColisaoY(player);
 }
 
 //Desenhar o jogador
@@ -104,3 +81,89 @@ Rectangle GetPlayerRect(Player *player){
         50
     };
 };
+
+//Pegar o tamanho do tile (telha)/ pedaço do mapa próximo
+void GetTileRange(Rectangle rect, int *comecoX, int *fimX, int *comecoY, int *fimY){
+    //Tamanho do tile x pela largura
+    *comecoX = (int)(rect.x / TILE_SIZE);
+    *fimX = (int)((rect.x + rect.width - 1) / TILE_SIZE);
+    //Tamanho do tile y pela altura
+    *comecoY = (int)(rect.y / TILE_SIZE);
+    *fimY = (int)((rect.y + rect.height - 1) / TILE_SIZE);
+
+    //proteção contra sair do mapa
+    if(*comecoX < 0) *comecoX = 0;
+    if(*comecoY < 0) *comecoY = 0;
+    if(*fimX >= COLUNAS) *fimX = COLUNAS -1;
+    if(*fimY >= LINHAS) *fimY = LINHAS -1;
+}
+
+void ResolveColisaoX(Player *player){
+    //Pegar o retângulo do Player
+    Rectangle rect = GetPlayerRect(player);
+
+    int comecoX, fimX, comecoY, fimY;
+    GetTileRange(rect, &comecoX, &fimX, &comecoY, &fimY);
+    //y height e x width
+    for(int y=comecoY; y <= fimY; y++){
+        for(int x=comecoX; x <= fimX; x++){
+            //Se o mapa tem elemento
+            if(mapa[y][x] == 1){
+                Rectangle tile = GetTileRect(x, y);
+
+                if(CheckCollisionRecs(rect, tile)){
+                    //Corrige a posição, ao encostar na parede volta
+                    if(player->velocidade.x > 0){
+                        player->posicao.x = tile.x - rect.width;
+                    }
+                    //Outra correção de posição, dessa vez pela esquerda
+                    else if(player->velocidade.x < 0){
+                        player->posicao.x = tile.x + tile.width;
+                    }
+                    //Reseta a velocidade
+                    player->velocidade.x = 0;
+
+                    //atuliza rect após correção 
+                    rect = GetPlayerRect(player);
+                }
+            }
+        }
+    }
+
+}
+void ResolveColisaoY(Player *player){
+    //Pegar o retângulo do Player
+    Rectangle rect = GetPlayerRect(player);
+
+    int comecoX, fimX, comecoY, fimY;
+    GetTileRange(rect, &comecoX, &fimX, &comecoY, &fimY);
+    //y height e x width
+    for(int y=comecoY; y <=fimY; y++){
+        for(int x=comecoX; x<=fimX; x++){
+
+            if(mapa[y][x] == 1) {
+                Rectangle tile = GetTileRect(x, y);
+
+                if(CheckCollisionRecs(rect, tile)){
+                    //colisão para o player (caindo) e parando no chão
+                    if(player->velocidade.y > 0){
+                        player->posicao.y = tile.y - rect.height;
+                        player->velocidade.y = 0;
+                        player->estaNoChao = 1;
+                    }
+                    //Player batendo a cabeça (subindo) e voltando para o chão
+                    else if(player->velocidade.y < 0){
+                        player->posicao.y = tile.y + rect.height;
+                        player->velocidade.y = 0;
+                    }
+                    //Reseta a velocidade
+                    player->velocidade.y = 0;
+                    //atualiza o ratângulo do player
+                    rect = GetPlayerRect(player);
+                }
+            }
+
+        }
+    }
+
+}
