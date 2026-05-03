@@ -94,8 +94,8 @@ void GetTileRange(Rectangle rect, int *comecoX, int *fimX, int *comecoY, int *fi
     //proteção contra sair do mapa
     if(*comecoX < 0) *comecoX = 0;
     if(*comecoY < 0) *comecoY = 0;
-    if(*fimX >= COLUNAS) *fimX = COLUNAS -1;
-    if(*fimY >= LINHAS) *fimY = LINHAS -1;
+    if(*fimX >= MAPA_LARGURA) *fimX = MAPA_LARGURA -1;
+    if(*fimY >= MAPA_ALTURA) *fimY = MAPA_ALTURA -1;
 }
 
 void ResolveColisaoX(Player *player){
@@ -153,7 +153,7 @@ void ResolveColisaoY(Player *player){
                     }
                     //Player batendo a cabeça (subindo) e voltando para o chão
                     else if(player->velocidade.y < 0){
-                        player->posicao.y = tile.y + rect.height;
+                        player->posicao.y = tile.y + tile.height;
                         player->velocidade.y = 0;
                     }
                     //Reseta a velocidade

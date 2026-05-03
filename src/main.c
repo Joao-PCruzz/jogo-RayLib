@@ -50,7 +50,7 @@ int main(){
         UpdatePlayer(&player); //logica do player
 
         // Atualização da posição da câmera (suavização)
-        UpdateCameraBounds(&camera, player, largura_tela, altura_tela);
+        UpdateCameraBounds(&camera, player, altura_tela, largura_tela);
 
         BeginDrawing(); //começa a desenhar
         ClearBackground(RAYWHITE);
